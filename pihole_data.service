@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=zabbix
-ExecStart=/etc/zabbix/bin/pihole_data.sh
+ExecStart=/usr/local/bin/pihole_data.sh
 
 [Install]
 WantedBy=multi-user.target

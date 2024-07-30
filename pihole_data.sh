@@ -2,6 +2,7 @@
 
 set -e
 
+APIKEY=$(grep WEBPASSWORD /etc/pihole/setupVars.conf |sed s/WEBPASSWORD=//g) 
 pihole_server=localhost
 
 CACHE_FILE=/var/log/zabbix/pihole-data.log
@@ -21,70 +22,72 @@ run_pihole_query() {
 
     local domains_blocked dns_queries_today ads_blocked_today ads_percentage_today
 
+    data=$(curl -s "http://$pihole_server/admin/api.php?summary&auth=$APIKEY")
+
     get_domainsblocked(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.domains_being_blocked')
+        rawjson=$(echo $data | jq '.domains_being_blocked')
         domains_blocked=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
     }
     get_dnsqueriestoday(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.dns_queries_today')
+        rawjson=$(echo $data | jq '.dns_queries_today')
         dns_queries_today=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
     }
     get_adsblockedtoday(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.ads_blocked_today')
+        rawjson=$(echo $data | jq '.ads_blocked_today')
         ads_blocked_today=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
     }
     get_adspercentagetoday(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.ads_percentage_today')
+        rawjson=$( echo $data | jq '.ads_percentage_today')
         ads_percentage_today=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
 
     get_uniquedomains(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.unique_domains')
+        rawjson=$( echo $data | jq '.unique_domains')
         unique_domains=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_queriesforwarded(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.queries_forwarded')
+        rawjson=$( echo $data | jq '.queries_forwarded')
         queries_forwarded=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_queriescached(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.queries_cached')
+        rawjson=$( echo $data | jq '.queries_cached')
         queries_cached=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_clientseverseen(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.clients_ever_seen')
+        rawjson=$( echo $data | jq '.clients_ever_seen')
         clients_ever_seen=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_uniqueclients(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.unique_clients')
+        rawjson=$( echo $data | jq '.unique_clients')
         unique_clients=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_dnsqueriesalltypes(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.dns_queries_all_types')
+        rawjson=$( echo $data | jq '.dns_queries_all_types')
         dns_queries_all_types=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
         
     get_replyNODATA(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.reply_NODATA')
+        rawjson=$( echo $data  | jq '.reply_NODATA')
         reply_NODATA=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_replyNXDOMAIN(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.reply_NXDOMAIN')
+        rawjson=$( echo $data | jq '.reply_NXDOMAIN')
         reply_NXDOMAIN=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_replyCNAME(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.reply_CNAME')
+        rawjson=$( echo $data | jq '.reply_CNAME')
         reply_CNAME=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_replyIP(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.reply_IP')
+        rawjson=$( echo $data| jq '.reply_IP')
         reply_IP=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_privacylevel(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.privacy_level')
+        rawjson=$( echo $data | jq '.privacy_level')
         privacy_level=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
     get_status(){
-        rawjson=$(curl -s http://$pihole_server/admin/api.php | jq '.status')
+        rawjson=$( echo $data | jq '.status')
         status=$(echo $rawjson | sed -e 's/\"//g' -e 's/\,//g')
         }
 
